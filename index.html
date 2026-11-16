@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Байгужин: философия, цитаты, скандалы</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0d0d12;
+    --surface: #16161f;
+    --surface2: #1e1e2a;
+    --border: rgba(255,255,255,0.08);
+    --text: #e8e6f0;
+    --muted: #8a869e;
+    --pink: #ff4d8d;
+    --purple: #a855f7;
+    --gold: #fbbf24;
+    --radius: 16px;
+  }
+
+  [data-theme="light"] {
+    --bg: #f5f3f8;
+    --surface: #ffffff;
+    --surface2: #f0ecf5;
+    --border: rgba(0,0,0,0.08);
+    --text: #1a1523;
+    --muted: #6b6580;
+  }
+
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    transition: background 0.4s, color 0.4s;
+    overflow-x: hidden;
+  }
+
+  /* ---------- LAYOUT ---------- */
+  .app { display: flex; min-height: 100vh; }
+
+  /* ---------- SIDEBAR ---------- */
+  .sidebar {
+    width: 280px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 32px 20px;
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+    transition: transform 0.3s ease, background 0.4s;
+  }
+
+  .brand {
+    font-size: 1.4rem;
+    font-weight: 900;
+    letter-spacing: 1px;
+    background: linear-gradient(90deg, var(--pink), var(--gold));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 6px;
+  }
+
+  .brand-sub {
+    font-size: 0.75rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    margin-bottom: 36px;
+  }
+
+  .nav { display: flex; flex-direction: column; gap: 6px; flex: 1; }
+
+  .nav-btn {
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    text-align: left;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: inherit;
+  }
+
+  .nav-btn:hover { background: var(--surface2); color: var(--text); }
+
+  .nav-btn.active {
+    background: linear-gradient(135deg, rgba(255,77,141,0.15), rgba(168,85,247,0.15));
+    color: var(--text);
+    font-weight: 600;
+    box-shadow: inset 2px 0 0 var(--pink);
+  }
+
+  .nav-btn .ico { font-size: 1.15rem; width: 24px; text-align: center; }
+
+  .theme-toggle {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px 14px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 20px;
+    transition: all 0.2s;
+  }
+
+  .theme-toggle:hover { border-color: var(--pink); }
+
+  /* ---------- MAIN ---------- */
+  .main {
+    margin-left: 280px;
+    flex: 1;
+    padding: 48px 56px 100px;
+    max-width: 1100px;
+  }
+
+  .page { display: none; animation: fadeUp 0.45s ease; }
+  .page.active { display: block; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .page-title {
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 900;
+    margin-bottom: 8px;
+    line-height: 1.15;
+  }
+
+  .page-title span {
+    background: linear-gradient(90deg, var(--pink), var(--gold));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .page-desc {
+    color: var(--muted);
+    font-size: 1rem;
+    margin-bottom: 36px;
+    max-width: 700px;
+  }
+
+  /* ---------- HERO / INTRO ---------- */
+  .hero-badge {
+    display: inline-block;
+    background: rgba(255,77,141,0.12);
+    border: 1px solid rgba(255,77,141,0.35);
+    color: var(--pink);
+    padding: 6px 16px;
+    border-radius: 50px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  .intro-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    margin: 40px 0;
+  }
+
+  .stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+  }
+
+  .stat .num {
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--pink);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .stat .label { font-size: 0.85rem; color: var(--muted); }
+
+  /* ---------- QUOTE SLIDER ---------- */
+  .slider {
+    background: linear-gradient(135deg, rgba(255,77,141,0.1), rgba(168,85,247,0.1));
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 48px 40px;
+    position: relative;
+    min-height: 260px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .slider::before {
+    content: '“';
+    position: absolute;
+    top: -10px; left: 24px;
+    font-size: 10rem;
+    color: rgba(255,77,141,0.12);
+    font-family: Georgia, serif;
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  .quote-text {
+    font-size: clamp(1.15rem, 2.6vw, 1.6rem);
+    font-weight: 600;
+    line-height: 1.5;
+    position: relative;
+    z-index: 2;
+    min-height: 100px;
+  }
+
+  .quote-meta {
+    margin-top: 20px;
+    font-size: 0.85rem;
+    color: var(--muted);
+    position: relative;
+    z-index: 2;
+  }
+
+  .quote-meta b { color: var(--gold); }
+
+  .slider-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 28px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .slider-btn {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+
+  .slider-btn:hover { border-color: var(--pink); color: var(--pink); }
+
+  .slider-dots { display: flex; gap: 8px; margin-left: auto; }
+
+  .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--border);
+    border: none;
+    cursor: pointer;
+    transition: all 0.25s;
+    padding: 0;
+  }
+
+  .dot.active { background: var(--pink); width: 24px; border-radius: 4px; }
+
+  /* ---------- LAW CARDS ---------- */
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 18px;
+    margin-top: 8px;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 26px 24px;
+    transition: all 0.3s;
+  }
+
+  .card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(255,77,141,0.4);
+    box-shadow: 0 14px 34px rgba(255,77,141,0.12);
+  }
+
+  .card .tag {
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--pink);
+    margin-bottom: 12px;
+  }
+
+  .card h3 { font-size: 1.05rem; margin-bottom: 8px; line-height: 1.35; }
+
+  .card p { font-size: 0.92rem; color: var(--muted); line-height: 1.6; }
+
+  /* ---------- ACCORDION ---------- */
+  .accordion { display: flex; flex-direction: column; gap: 10px; }
+
+  .acc-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .acc-head {
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: var(--text);
+    padding: 20px 24px;
+    font-size: 1rem;
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    font-family: inherit;
+  }
+
+  .acc-head .arrow { transition: transform 0.3s; color: var(--pink); flex-shrink: 0; }
+  .acc-item.open .arrow { transform: rotate(180deg); }
+
+  .acc-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease;
+  }
+
+  .acc-item.open .acc-body { max-height: 600px; }
+
+  .acc-body-inner {
+    padding: 0 24px 22px;
+    color: var(--muted);
+    font-size: 0.94rem;
+    line-height: 1.7;
+    border-top: 1px solid var(--border);
+    padding-top: 18px;
+  }
+
+  /* ---------- TIMELINE ---------- */
+  .timeline { position: relative; padding-left: 32px; }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 7px; top: 6px; bottom: 6px;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--pink), var(--purple), transparent);
+  }
+
+  .tl-item { position: relative; padding-bottom: 28px; }
+
+  .tl-item::before {
+    content: '';
+    position: absolute;
+    left: -32px; top: 6px;
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 3px solid var(--pink);
+  }
+
+  .tl-year {
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: var(--pink);
+    margin-bottom: 4px;
+  }
+
+  .tl-item h3 { font-size: 1.05rem; margin-bottom: 4px; }
+  .tl-item p { font-size: 0.9rem; color: var(--muted); }
+
+  /* ---------- DISCLAIMER ---------- */
+  .disclaimer {
+    background: rgba(251,191,36,0.07);
+    border: 1px solid rgba(251,191,36,0.3);
+    border-radius: var(--radius);
+    padding: 22px 24px;
+    margin-top: 40px;
+    font-size: 0.88rem;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  .disclaimer b { color: var(--gold); }
+
+  /* ---------- MOBILE ---------- */
+  .menu-toggle {
+    display: none;
+    position: fixed;
+    top: 16px; left: 16px;
+    z-index: 200;
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    font-size: 1.3rem;
+    cursor: pointer;
+  }
+
+  @media (max-width: 900px) {
+    .sidebar { transform: translateX(-100%); }
+    .sidebar.open { transform: translateX(0); }
+    .main { margin-left: 0; padding: 80px 22px 80px; }
+    .menu-toggle { display: flex; align-items: center; justify-content: center; }
+    .slider { padding: 36px 24px; }
+  }
+</style>
+</head>
+<body>
+
+<button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">БАЙГУЖИН</div>
+    <div class="brand-sub">философия · цитаты · скандалы</div>
+
+    <nav class="nav">
+      <button class="nav-btn active" data-page="intro" onclick="go('intro')">
+        <span class="ico">◆</span> Введение
+      </button>
+      <button class="nav-btn" data-page="quotes" onclick="go('quotes')">
+        <span class="ico">“</span> Цитаты
+      </button>
+      <button class="nav-btn" data-page="laws" onclick="go('laws')">
+        <span class="ico">§</span> Законы байгужанства
+      </button>
+      <button class="nav-btn" data-page="scandals" onclick="go('scandals')">
+        <span class="ico">⚠</span> Скандалы
+      </button>
+      <button class="nav-btn" data-page="timeline" onclick="go('timeline')">
+        <span class="ico">⏱</span> Хронология
+      </button>
+    </nav>
+
+    <button class="theme-toggle" onclick="toggleTheme()">
+      <span id="themeIcon">☀️</span> <span id="themeLabel">Светлая тема</span>
+    </button>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- ========== INTRO ========== -->
+    <div class="page active" id="page-intro">
+      <div class="hero-badge">Досье</div>
+      <h1 class="page-title">Денис Байгужин:<br><span>«философия» абсолютной правоты</span></h1>
+      <p class="page-desc">
+        «Свадебный король», «гуру женского счастья», автор книг и создатель системы
+        «байгужанство». В публичном поле — обещания заботы и подарков. В реальности —
+        международный розыск, обвинения в мошенничестве и скандалы с унизительными
+        тренингами. Здесь собраны его самые показательные высказывания — без купюр.
+      </p>
+
+      <div class="intro-stats">
+        <div class="stat"><div class="num">10+</div><div class="label">цитат и «законов»</div></div>
+        <div class="stat"><div class="num">4,3 млн ₽</div><div class="label">ущерб по версии следствия</div></div>
+        <div class="stat"><div class="num">2023</div><div class="label">объявлен в розыск</div></div>
+        <div class="stat"><div class="num">1,8 / 5</div><div class="label">средний рейтинг книг</div></div>
+      </div>
+
+      <div class="slider" id="introSlider">
+        <div class="quote-text" id="introQuoteText">Загрузка…</div>
+        <div class="quote-meta" id="introQuoteMeta"></div>
+        <div class="slider-controls">
+          <button class="slider-btn" onclick="prevQuote()">‹</button>
+          <button class="slider-btn" onclick="nextQuote()">›</button>
+          <div class="slider-dots" id="dots"></div>
+        </div>
+      </div>
+
+      <div class="disclaimer" style="margin-top:48px">
+        <b>Важно:</b> этот сайт — критический разбор публичной риторики и практик.
+        Цитаты приводятся для анализа, а не для пропаганды. «Байгужанство» не является
+        психологической школой и не имеет научного обоснования.
+      </div>
+    </div>
+
+    <!-- ========== QUOTES ========== -->
+    <div class="page" id="page-quotes">
+      <h1 class="page-title">Цитаты <span>без купюр</span></h1>
+      <p class="page-desc">Самые характерные высказывания из книг, подкастов и интервью.</p>
+
+      <div class="cards">
+        <div class="card">
+          <div class="tag">О женщинах</div>
+          <h3>«Женщина — это самый большой подарок природы»</h3>
+          <p>«Женщин надо любить, уважать, заботиться о них, одаривать и обласкивать. Все, кто думает, что женщины нужны лишь для стирки и глажки, — летят со скалы».</p>
+          <p style="margin-top:10px;font-size:0.78rem;color:var(--muted)">Книга «Из консьержки в байгужанки»[reference:0]</p>
+        </div>
+
+        <div class="card">
+          <div class="tag">О предназначении</div>
+          <h3>«Ты не предназначена для работы»</h3>
+          <p>«Ты не предназначена для работы, у тебя другая функция. Женщина должна жить только за счёт мужчины».</p>
+          <p style="margin-top:10px;font-size:0.78rem;color:var(--muted)">Из описания тренингов[reference:1]</p>
+        </div>
+
+        <div class="card">
+          <div class="tag">О «байгужанстве»</div>
+          <h3>«Байгужанство — великолепный рецепт счастливой жизни»</h3>
+          <p>«Мы все деньги мира хотим заработать ради женщин, потому что мужики живут ради женщин. Мужики — это смердящие псы, созданные для служения и поклонения женщине».</p>
+          <p style="margin-top:10px;font-size:0.78rem;color:var(--muted)">Книга «До сих пор не замужем»[reference:2]</p>
+        </div>
+
+        <div class="card">
+          <div class="tag">О дрессировке</div>
+          <h3>«Они их так жёстко дрессируют»</h3>
+          <p>«У меня девочки выходят замуж за американцев, они их так жёстко дрессируют».</p>
+          <p style="margin-top:10px;font-size:0.78rem;color:var(--muted)">Подкаст, 2026 г.[reference:3]</p>
+        </div>
+
+        <div class="card">
+          <div class="tag">О казашках</div>
+          <h3>«Казашки — хр*новые музы»</h3>
+          <p>«Казашки не мотивируют мужиков на огромный личностный и финансовый рост».</p>
+          <p style="margin-top:10px;font-size:0.78rem;color:var(--muted)">Подкаст, 2026 г. Вызвало волну критики в Казахстане[reference:4]</p>
+        </div>
+
+        <div class="card">
+          <div class="tag">О любви</div>
+          <h3>«Любовь — это взаимное служение»</h3>
+          <p>В подкастах Байгужин продвигает идею, что «любовь — это всего лишь обмен ресурсами» и «технология влюбления».</p>
+          <p style="margin-top:10px;font-size:0.78rem;color:var(--muted)">Интервью и подкасты[reference:5][reference:6]</p>
+        </div>
+
+        <div class="card">
+          <div class="tag">О феминизме</div>
+          <h3>«Феминизм придумали мужчины»</h3>
+          <p>«Феминизм придумали мы, мужчины, чтобы красиво оправдывать свою безответственность и слабость».</p>
+          <p style="margin-top:10px;font-size:0.78rem;color:var(--muted)">Из отзыва на книгу, цитирующего автора[reference:7]</p>
+        </div>
+
+        <div class="card">
+          <div class="tag">О богатстве</div>
+          <h3>«Я — король красивой жизни»</h3>
+          <p>«Я — адский тренер. Я — король красивой жизни. Мне плевать на тех, кто не готов принимать одну простую мысль…»</p>
+          <p style="margin-top:10px;font-size:0.78rem;color:var(--muted)">Книга «Из консьержки в байгужанки»[reference:8]</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== LAWS ========== -->
+    <div class="page" id="page-laws">
+      <h1 class="page-title">Законы <span>байгужанства</span></h1>
+      <p class="page-desc">Система, которую он называет «философией». Собрано из его книг и публичных выступлений.</p>
+
+      <div class="cards">
+        <div class="card">
+          <div class="tag">Закон 1</div>
+          <h3>Мужчина обеспечивает</h3>
+          <p>Женщина не должна работать «на дядю». Её функция — вдохновлять, а мужчина — зарабатывать и отдавать деньги.</p>
+        </div>
+        <div class="card">
+          <div class="tag">Закон 2</div>
+          <h3>Меркантильность — это хорошо</h3>
+          <p>Просить дорогие подарки — не стыдно. Стыдно — соглашаться на «50 на 50» и мужчин, которые «экономят» на женщине.</p>
+        </div>
+        <div class="card">
+          <div class="tag">Закон 3</div>
+          <h3>Мужчина — «объект»</h3>
+          <p>Мужчина должен «заслужить» секс своим поведением, ухаживаниями и тратами. Отношения строятся как обмен ресурсами.</p>
+        </div>
+        <div class="card">
+          <div class="tag">Закон 4</div>
+          <h3>Женщина — «альфа-самка»</h3>
+          <p>Задача — стать «альфа-самкой», которой мужчины будут «сходить с ума» и обеспечивать «просто так».</p>
+        </div>
+        <div class="card">
+          <div class="tag">Закон 5</div>
+          <h3>Никакой «женской дружбы»</h3>
+          <p>В «байгужанстве» женщины конкурируют за ресурсных мужчин. Слабость и эмпатия — не про эту систему.</p>
+        </div>
+        <div class="card">
+          <div class="tag">Закон 6</div>
+          <h3>«Любовь — это договорённости»</h3>
+          <p>Романтика — надстройка. База — ресурсы, статус и умение «качественно играть роль».</p>
+        </div>
+      </div>
+
+      <div class="disclaimer">
+        <b>Обратите внимание:</b> это не «законы» в научном смысле. Это маркетинговые
+        и риторические конструкции, которые критикуются психологами как манипулятивные
+        и способствующие формированию зависимости от «гуру»[reference:9].
+      </div>
+    </div>
+
+    <!-- ========== SCANDALS ========== -->
+    <div class="page" id="page-scandals">
+      <h1 class="page-title">Скандалы и <span>обвинения</span></h1>
+      <p class="page-desc">Нажми на каждый пункт, чтобы раскрыть подробности.</p>
+
+      <div class="accordion" id="accordion">
+        <div class="acc-item">
+          <button class="acc-head" onclick="toggleAcc(this)">
+            Мошенничество и международный розыск
+            <span class="arrow">▾</span>
+          </button>
+          <div class="acc-body"><div class="acc-body-inner">
+            В марте 2024 года Пресненский районный суд Москвы заочно арестовал Байгужина
+            по обвинению в мошенничестве в особо крупном размере. По версии следствия,
+            он вместе с сообщниками убедил учениц вложиться в фиктивные сертификаты
+            «Империя Байгужина» под 25% годовых. Одна из потерпевших передала 4,3 млн
+            рублей и квартиру в Московской области. С июля 2023 года находится в
+            международном розыске[reference:10][reference:11].
+          </div></div>
+        </div>
+
+        <div class="acc-item">
+          <button class="acc-head" onclick="toggleAcc(this)">
+            Унизительные практики на тренингах
+            <span class="arrow">▾</span>
+          </button>
+          <div class="acc-body"><div class="acc-body-inner">
+            Ряд бывших участниц рассказывали о психологическом давлении и унизительных
+            заданиях. По данным СМИ, самых «слабых» могли усаживать на корточки в центре
+            дороги, фиксировать руки за спиной и заставлять остальных участниц совершать
+            унизительные действия. Сам Байгужин называл свои методы «дрессировкой»[reference:12][reference:13].
+          </div></div>
+        </div>
+
+        <div class="acc-item">
+          <button class="acc-head" onclick="toggleAcc(this)">
+            Оскорбительные высказывания о казашках
+            <span class="arrow">▾</span>
+          </button>
+          <div class="acc-body"><div class="acc-body-inner">
+            В 2026 году в подкасте он заявил, что «казашки — хр*новые музы» и «не
+            мотивируют мужиков на огромный личностный и финансовый рост». Высказывания
+            вызвали скандал в Казахстане; юристы обсуждали возможные признаки унижения
+            достоинства по национальному и гендерному признаку[reference:14].
+          </div></div>
+        </div>
+
+        <div class="acc-item">
+          <button class="acc-head" onclick="toggleAcc(this)">
+            Критика психологов и низкий рейтинг книг
+            <span class="arrow">▾</span>
+          </button>
+          <div class="acc-body"><div class="acc-body-inner">
+            Психологи и психотерапевты критикуют «байгужанство» как манипулятивную
+            систему, которая «дёргает за ниточки» уязвимую аудиторию. Книги Байгужина
+            имеют средний рейтинг около 1,8 из 5; рецензенты называют его «шарлатаном»
+            и «манипулятором»[reference:15].
+          </div></div>
+        </div>
+
+        <div class="acc-item">
+          <button class="acc-head" onclick="toggleAcc(this)">
+            Продолжение деятельности из-за границы
+            <span class="arrow">▾</span>
+          </button>
+          <div class="acc-body"><div class="acc-body-inner">
+            По данным «Известий», даже находясь в розыске, Байгужин продолжает
+            зарабатывать в России десятки миллионов рублей через чужие ИП и онлайн-курсы,
+            находясь в ОАЭ[reference:16][reference:17].
+          </div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== TIMELINE ========== -->
+    <div class="page" id="page-timeline">
+      <h1 class="page-title">Хронология <span>пути</span></h1>
+      <p class="page-desc">От баптистской церкви и детективного агентства — до международного розыска.</p>
+
+      <div class="timeline">
+        <div class="tl-item">
+          <div class="tl-year">2000-е</div>
+          <h3>Детектив и «Серебряная пуля»</h3>
+          <p>Работал в полиции, затем открыл детективное агентство, специализировавшееся на изменах. Был осуждён за мошенничество, так как не имел лицензии.</p>
+        </div>
+        <div class="tl-item">
+          <div class="tl-year">2011</div>
+          <h3>Начало «карьеры»</h3>
+          <p>После выхода из тюрьмы начинает вести тренинги для женщин, обещая «выдать замуж за миллионера».</p>
+        </div>
+        <div class="tl-item">
+          <div class="tl-year">2010-е</div>
+          <h3>Книги и «байгужанство»</h3>
+          <p>Выпускает книги «Искусство быть женщиной», «Из консьержки в байгужанки», «До сих пор не замужем» и другие. Формирует вокруг себя культ «байгужанок».</p>
+        </div>
+        <div class="tl-item">
+          <div class="tl-year">2023</div>
+          <h3>Международный розыск</h3>
+          <p>Объявлен в розыск по обвинению в мошенничестве. По версии следствия, ущерб от его деятельности — миллионы рублей.</p>
+        </div>
+        <div class="tl-item">
+          <div class="tl-year">2024</div>
+          <h3>Заочный арест</h3>
+          <p>Пресненский суд Москвы заочно арестовал Байгужина. Он находится в ОАЭ и продолжает вести деятельность онлайн.</p>
+        </div>
+        <div class="tl-item">
+          <div class="tl-year">2026</div>
+          <h3>Скандал с казашками</h3>
+          <p>Резкие высказывания о казахстанских женщинах вызывают волну критики и общественную дискуссию.</p>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  /* ---------- QUOTES DATA ---------- */
+  const quotes = [
+    {
+      text: '«Женщина — это самый большой подарок природы. Женщин надо любить, уважать, заботиться о них, одаривать и обласкивать. Все, кто думает, что женщины нужны лишь для стирки и глажки, — летят со скалы».',
+      source: 'Книга «Из консьержки в байгужанки»',
+      type: 'декларация'
+    },
+    {
+      text: '«Ты не предназначена для работы, у тебя другая функция. Женщина должна жить только за счёт мужчины».',
+      source: 'Из описания тренингов',
+      type: '«философия»'
+    },
+    {
+      text: '«У меня девочки выходят замуж за американцев, они их так жёстко дрессируют».',
+      source: 'Подкаст, 2026 г.',
+      type: 'метафора'
+    },
+    {
+      text: '«Казашки — хр*новые музы. Казашки не мотивируют мужиков на огромный личностный и финансовый рост».',
+      source: 'Подкаст, 2026 г.',
+      type: 'скандал'
+    },
+    {
+      text: '«Байгужанство — это великолепный рецепт счастливой жизни. Мы все деньги мира хотим заработать ради женщин, потому что мужики живут ради женщин. Мужики — это смердящие псы, созданные для служения и поклонения женщине».',
+      source: 'Книга «До сих пор не замужем»',
+      type: 'манифест'
+    },
+    {
+      text: '«Я — адский тренер. Я — король красивой жизни. Мне плевать на тех, кто не готов принимать одну простую мысль: женщина — это самый большой подарок природы».',
+      source: 'Книга «Из консьержки в байгужанки»',
+      type: 'самопрезентация'
+    },
+    {
+      text: '«Любовь — это взаимное служение. Любовь — это всего лишь обмен ресурсами».',
+      source: 'Подкасты и интервью',
+      type: 'формула'
+    }
+  ];
+
+  let qIndex = 0;
+
+  function renderQuote() {
+    const q = quotes[qIndex];
+    document.getElementById('introQuoteText').textContent = q.text;
+    document.getElementById('introQuoteMeta').innerHTML =
+      `<b>${q.type}</b> · ${q.source}`;
+
+    const dots = document.getElementById('dots');
+    dots.innerHTML = quotes.map((_, i) =>
+      `<button class="dot ${i === qIndex ? 'active' : ''}" onclick="goQuote(${i})"></button>`
+    ).join('');
+  }
+
+  function nextQuote() { qIndex = (qIndex + 1) % quotes.length; renderQuote(); }
+  function prevQuote() { qIndex = (qIndex - 1 + quotes.length) % quotes.length; renderQuote(); }
+  function goQuote(i) { qIndex = i; renderQuote(); }
+
+  /* ---------- NAV ---------- */
+  function go(page) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-' + page).classList.add('active');
+
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector(`.nav-btn[data-page="${page}"]`).classList.add('active');
+
+    document.getElementById('sidebar').classList.remove('open');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('open');
+  }
+
+  /* ---------- ACCORDION ---------- */
+  function toggleAcc(btn) {
+    const item = btn.parentElement;
+    const wasOpen = item.classList.contains('open');
+    document.querySelectorAll('.acc-item').forEach(i => i.classList.remove('open'));
+    if (!wasOpen) item.classList.add('open');
+  }
+
+  /* ---------- THEME ---------- */
+  function toggleTheme() {
+    const body = document.body;
+    const isLight = body.getAttribute('data-theme') === 'light';
+    body.setAttribute('data-theme', isLight ? 'dark' : 'light');
+    document.getElementById('themeIcon').textContent = isLight ? '☀️' : '🌙';
+    document.getElementById('themeLabel').textContent = isLight ? 'Светлая тема' : 'Тёмная тема';
+  }
+
+  /* ---------- INIT ---------- */
+  renderQuote();
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight') nextQuote();
+    if (e.key === 'ArrowLeft') prevQuote();
+  });
+</script>
+
+</body>
+</html>
